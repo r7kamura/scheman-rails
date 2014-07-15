@@ -3,14 +3,8 @@ module Scheman
     class Dumper
       SCHEMA_PATH = "db/schema.sql"
 
-      def self.call(*args)
-        new(*args).call
-      end
-
-      # @note You can extract some useful information from @configuration object
-      # @param configuration [Object] A configuration object for ActiveRecord
-      def initialize(configuration)
-        @configuration = configuration
+      def self.call
+        new.call
       end
 
       def call
@@ -106,44 +100,48 @@ module Scheman
       end
 
       def database
-        @configuration["database"]
+        configuration["database"]
       end
 
       def encoding
-        @configuration["encoding"]
+        configuration["encoding"]
       end
 
       def socket
-        @configuration["socket"]
+        configuration["socket"]
       end
 
       def host
-        @configuration["host"]
+        configuration["host"]
       end
 
       def password
-        @configuration["password"]
+        configuration["password"]
       end
 
       def port
-        @configuration["port"]
+        configuration["port"]
       end
 
       def socket
-        @configuration["socket"]
+        configuration["socket"]
       end
 
       def username
-        @configuration["username"]
+        configuration["username"]
       end
 
       def schema_type
-        case @configuration["adapter"]
+        case configuration["adapter"]
         when "mysql2"
           "mysql"
         else
           raise
         end
+      end
+
+      def configuration
+        @configuration ||= ActiveRecord::Tasks::DatabaseTasks.current_config
       end
     end
   end
