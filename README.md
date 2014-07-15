@@ -8,6 +8,6 @@ gem "scheman-rails"
 ```
 
 ```sh
-$ rake db:scheman:diff
-$ rake db:scheman:apply
+$ rake db:schema:diff
+$ rake db:schema:apply
 ```
