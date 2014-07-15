@@ -1,5 +1,5 @@
 # Scheman::Rails
-Rails plugin for Scheman.
+Rails plugin for [Scheman](https://github.com/r7kamura/scheman).
 
 ## Usage
 ```ruby
