@@ -1,11 +1,20 @@
 module Scheman
   module Rails
     class Applier < Base
+      DEFAULT_SCHEMA_MESSAGE = "# Write your database schema here"
+
       def self.call
         new.call
       end
 
       def call
+        execute_sql
+        create_schema_file
+      end
+
+      private
+
+      def execute_sql
         if has_error?
           abort(error_message)
         elsif dumper.result.present?
@@ -13,7 +22,13 @@ module Scheman
         end
       end
 
-      private
+      def create_schema_file
+        unless after_schema_pathname.exist?
+          after_schema_pathname.open("w") do |io|
+            io.puts DEFAULT_SCHEMA_MESSAGE
+          end
+        end
+      end
 
       def result
         @result ||= Open3.capture3(command, stdin_data: dumper.result)

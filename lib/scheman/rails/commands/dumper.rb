@@ -74,11 +74,7 @@ module Scheman
           ""
         end
       end
-
-      def after_schema_pathname
-        @after_schema_path ||= ::Rails.root.join(SCHEMA_PATH)
-      end
-
+1
       def command
         "mysqldump " + command_options.join(" ")
       end

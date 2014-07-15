@@ -53,6 +53,10 @@ module Scheman
       def configuration
         @configuration ||= ActiveRecord::Tasks::DatabaseTasks.current_config
       end
+
+      def after_schema_pathname
+        @after_schema_path ||= ::Rails.root.join(SCHEMA_PATH)
+      end
     end
   end
 end

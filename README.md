@@ -9,4 +9,5 @@ gem "scheman-rails"
 
 ```sh
 $ rake db:scheman:diff
+$ rake db:scheman:apply
 ```
