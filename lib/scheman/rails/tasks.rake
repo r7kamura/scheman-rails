@@ -5,7 +5,7 @@ namespace :db do
       Scheman::Rails::Dumper.call
     end
 
-    desc "Apply diff to the database"
+    desc "Apply diff between the current DB schema and db/schema.sql"
     task apply: [:environment, :load_config] do
       Scheman::Rails::Applier.call
     end

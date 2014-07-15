@@ -14,12 +14,6 @@ module Scheman
         has_dump_error? && /Unknown database/ === dump_error_message
       end
 
-      def result
-        @result ||= statements.join("\n\n").rstrip
-      end
-
-      private
-
       def diff
         @diff ||= Scheman::Diff.new(
           before: before_schema,
@@ -28,15 +22,17 @@ module Scheman
         )
       end
 
+      def result
+        @result ||= statements.join("\n\n").rstrip
+      end
+
+      private
+
       def statements
         result = []
         result << create_database_statement if has_unknown_database_error?
         result << diff
         result
-      end
-
-      def create_database_statement
-        "CREATE DATABASE `#{database}`;"
       end
 
       def dump

@@ -17,8 +17,8 @@ module Scheman
       def execute_sql
         if has_error?
           abort(error_message)
-        elsif dumper.result.present?
-          puts dumper.result
+        elsif executed_sql.present?
+          puts executed_sql
         end
       end
 
@@ -30,8 +30,20 @@ module Scheman
         end
       end
 
+      def executed_sql
+        @executed_sql ||= begin
+          result = []
+          unless has_database?
+            result << create_database_statement
+            result << use_database_steatement
+          end
+          result << diff
+          result.join("\n\n")
+        end
+      end
+
       def result
-        @result ||= Open3.capture3(command, stdin_data: dumper.result)
+        @result ||= Open3.capture3(command, stdin_data: executed_sql)
       end
 
       def result_message
@@ -47,7 +59,7 @@ module Scheman
       end
 
       def diff
-        dumper.call
+        dumper.result
       end
 
       def dumper
@@ -71,6 +83,10 @@ module Scheman
         result.concat(["--socket", socket]) if socket
         result.concat(["--user", username]) if username
         result
+      end
+
+      def use_database_steatement
+        "USE `#{database}`;"
       end
     end
   end

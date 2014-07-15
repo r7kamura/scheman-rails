@@ -57,6 +57,10 @@ module Scheman
       def after_schema_pathname
         @after_schema_path ||= ::Rails.root.join(SCHEMA_PATH)
       end
+
+      def create_database_statement
+        "CREATE DATABASE `#{database}`;"
+      end
     end
   end
 end
