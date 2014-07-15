@@ -1,17 +1,32 @@
 module Scheman
   module Rails
-    class Dumper
-      SCHEMA_PATH = "db/schema.sql"
-
-      def self.call
-        new.call
+    class Dumper < Base
+      def call
+        case
+        when has_unexpected_dump_error?
+          abort(dump_error_message)
+        when str = result.presence
+          puts str
+        end
       end
 
-      def call
-        print statements.join("\n\n").rstrip + "\n"
+      def has_unknown_database_error?
+        has_dump_error? && /Unknown database/ === dump_error_message
+      end
+
+      def result
+        @result ||= statements.join("\n\n").rstrip
       end
 
       private
+
+      def diff
+        @diff ||= Scheman::Diff.new(
+          before: before_schema,
+          after: after_schema,
+          type: schema_type,
+        )
+      end
 
       def statements
         result = []
@@ -22,14 +37,6 @@ module Scheman
 
       def create_database_statement
         "CREATE DATABASE `#{database}`;"
-      end
-
-      def diff
-        Scheman::Diff.new(
-          before: before_schema,
-          after: after_schema,
-          type: schema_type,
-        )
       end
 
       def dump
@@ -48,15 +55,15 @@ module Scheman
         dump[1]
       end
 
-      def has_unknown_database_error?
-        has_dump_error? && /Unknown database/ === dump_error_message
+      def has_unexpected_dump_error?
+        has_dump_error? && !has_unknown_database_error?
       end
 
       def before_schema
         if has_unknown_database_error?
           ""
         else
-          dump
+          dump_result
         end
       end
 
@@ -97,51 +104,6 @@ module Scheman
         result.concat(["--socket", socket]) if socket
         result.concat(["--user", username]) if username
         result
-      end
-
-      def database
-        configuration["database"]
-      end
-
-      def encoding
-        configuration["encoding"]
-      end
-
-      def socket
-        configuration["socket"]
-      end
-
-      def host
-        configuration["host"]
-      end
-
-      def password
-        configuration["password"]
-      end
-
-      def port
-        configuration["port"]
-      end
-
-      def socket
-        configuration["socket"]
-      end
-
-      def username
-        configuration["username"]
-      end
-
-      def schema_type
-        case configuration["adapter"]
-        when "mysql2"
-          "mysql"
-        else
-          raise
-        end
-      end
-
-      def configuration
-        @configuration ||= ActiveRecord::Tasks::DatabaseTasks.current_config
       end
     end
   end

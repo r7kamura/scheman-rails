@@ -4,5 +4,10 @@ namespace :db do
     task diff: [:environment, :load_config] do
       Scheman::Rails::Dumper.call
     end
+
+    desc "Apply diff to the database"
+    task apply: [:environment, :load_config] do
+      Scheman::Rails::Applier.call
+    end
   end
 end
